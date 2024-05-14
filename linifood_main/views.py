@@ -4,4 +4,4 @@ from .import views
 
 
 def home(request):
-  return HttpResponse ("hello world")
+  return render(request, "home.html")
