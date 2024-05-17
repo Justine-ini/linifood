@@ -37,11 +37,11 @@ class UserManager(BaseUserManager):  # Creating a custom user manager class inhe
     return user  # Return the created user object
 
 class User(AbstractBaseUser):  # Custom user model inheriting from AbstractBaseUser
-  RESTAURANT = 1  # Constant representing a restaurant user
+  VENDOR = 1  # Constant representing a vendor user
   CUSTOMER = 2  # Constant representing a customer user
 
   ROLE_CHOICE = (  # Tuple containing choices for user role
-    (RESTAURANT, "restaurant"),  # Choice for restaurant user
+    (VENDOR, "vendor"),  # Choice for vendor user
     (CUSTOMER, "customer")  # Choice for customer user
   )
   first_name = models.CharField(max_length=50)  # Field for user's first name
