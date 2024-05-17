@@ -75,6 +75,14 @@ class User(AbstractBaseUser):  # Custom user model inheriting from AbstractBaseU
   
   def has_module_perms(self, app_label):  # Method to check if user has permissions for a given module
     return True  # All users have permission for any module
+  
+  def get_role(self):
+    if self.role == 1:
+      user_role = "vendor"
+    elif self.role == 2:
+      user_role = "customer"
+    return user_role
+
 
 '''
 This code defines a custom user model (User) and a custom user manager (UserManager) using Django's authentication system. The User model inherits from AbstractBaseUser, allowing customization of user authentication in Django projects. The UserManager provides methods for creating both standard users and superusers. The User model includes fields for standard user information such as first name, last name, username, email, phone number, and role. It also includes fields related to authentication and permissions such as date joined, last login, admin status, staff status, and active status. Additionally, it defines methods for checking permissions.
