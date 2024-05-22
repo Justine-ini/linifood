@@ -1,12 +1,18 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from .models import User, UserProfile
+# from .utils import send_verification_email
+
+
+
+
 
 @receiver(post_save, sender=User)  # Decorator to register a receiver function for the post_save signal of the User model
 def post_save_create_profile_receiver(sender, instance, created, **kwargs):  # Signal handler function for post_save signal
   if created:  # Check if a new instance of User was created
     UserProfile.objects.create(user=instance)  # Create a UserProfile instance associated with the newly created User instance
 
+    
   else:  # If the User instance was not newly created
     try:  # Try to fetch an existing UserProfile instance associated with the User
       profile = UserProfile.objects.get(user=instance)
@@ -25,3 +31,9 @@ def pre_save_profile_receiver(sender, instance, **kwargs):
   pass
 # Another way to write it
 #post_save.connect(post_save_create_profile_receiver, sender=User)
+
+
+# @receiver(post_save, sender=User)
+# def send_user_verification_email(sender, instance, created, **kwargs):
+#     if created:
+#         send_verification_email(user=instance)

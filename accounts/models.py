@@ -58,7 +58,7 @@ class User(AbstractBaseUser):  # Custom user model inheriting from AbstractBaseU
   modified_date = models.DateTimeField(auto_now=True)  # Field for the last modification date
   is_admin = models.BooleanField(default=False)  # Field indicating if user is an admin
   is_staff = models.BooleanField(default=False)  # Field indicating if user is staff
-  is_active = models.BooleanField(default=False)  # Field indicating if user is active
+  is_active = models.BooleanField(default=True)  # Field indicating if user is active
   is_superadmin = models.BooleanField(default=False)  # Field indicating if user is a super admin
 
   objects = UserManager()  # Manager for this user model
@@ -105,6 +105,9 @@ class UserProfile(models.Model):  # Define a model named UserProfile to store ad
 
   def __str__(self):  # Define how this object is represented as a string
     return self.user.email  # Return the email address of the associated user as the string representation
+
+  def full_name(self):
+    return f"{self.address_line1}, {self.address_line2} "
 
 '''
 This code defines a Django model named UserProfile. It contains fields to store various details about a user's profile, including their profile picture, cover photo, address, location, and timestamps for creation and modification. The user field establishes a one-to-one relationship with the User model, linking each user to their profile. The __str__ method is overridden to return the email address of the associated user, providing a readable representation of the UserProfile object.
