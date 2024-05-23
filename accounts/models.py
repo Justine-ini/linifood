@@ -92,8 +92,8 @@ class UserProfile(models.Model):  # Define a model named UserProfile to store ad
   user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)  # Establish a one-to-one relationship with the User model, deleting this profile if the associated user is deleted
   profile_picture = models.ImageField(upload_to="users/profile_pictures", blank=True, null=True)  # Field to store the user's profile picture, allowing blank entries
   cover_photo = models.ImageField(upload_to="users/cover_photos", blank=True, null=True)  # Field to store the user's cover photo, allowing blank entries
-  address_line1 = models.CharField(max_length=100, blank=True, null=True)  # Field to store the user's address line 1, allowing blank entries
-  address_line2 = models.CharField(max_length=100, blank=True, null=True)  # Field to store the user's address line 2, allowing blank entries
+  address = models.CharField(max_length=250, blank=True, null=True)  # Field to store the user's address line 1, allowing blank entries
+
   country = models.CharField(max_length=20, blank=True, null=True)  # Field to store the user's country, allowing blank entries
   state = models.CharField(max_length=20, blank=True, null=True)  # Field to store the user's state, allowing blank entries
   city = models.CharField(max_length=20, blank=True, null=True)  # Field to store the user's city, allowing blank entries
@@ -106,8 +106,8 @@ class UserProfile(models.Model):  # Define a model named UserProfile to store ad
   def __str__(self):  # Define how this object is represented as a string
     return self.user.email  # Return the email address of the associated user as the string representation
 
-  def full_name(self):
-    return f"{self.address_line1}, {self.address_line2} "
+  # def full_address(self):
+  #   return f"{self.address_line1}, {self.address_line2} "
 
 '''
 This code defines a Django model named UserProfile. It contains fields to store various details about a user's profile, including their profile picture, cover photo, address, location, and timestamps for creation and modification. The user field establishes a one-to-one relationship with the User model, linking each user to their profile. The __str__ method is overridden to return the email address of the associated user, providing a readable representation of the UserProfile object.
