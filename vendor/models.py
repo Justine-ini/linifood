@@ -9,7 +9,7 @@ class Vendor(models.Model):
   vendor_name = models.CharField(max_length=100)
   vendor_license = models.ImageField(upload_to="vendor/license")
   # These will be captured automatically
-  is_approved = models.BooleanField(default=False)
+  is_approved = models.BooleanField(default=True)
   created_at = models.DateTimeField(auto_now_add=True)
   modified_at = models.DateTimeField(auto_now=True)
 

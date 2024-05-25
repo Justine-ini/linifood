@@ -36,10 +36,18 @@
                       <td class="text-left">{{forloop.counter}}</td>
                       <td class="text-left"><img src="{{food.images.url }}" alt="food image" width="60"></td>
                       <td class="text-left">
-                        <a href="#"><p class="mb-0 font-weight:bold" >{{food}}</p>
+                        <a href="#" style="text-decoration: none;"><p class="mb-0 font-weight:bold">{{food}}</p>
                         <small class="text-muted">{{food.description}}</small></a>
                       </td>
-                      <td><i class="fa fa-edit" aria-hidden="true">&nbsp; <i class="fa fa-trash text-danger" aria-hidden="true"></td>
+                      <td>
+                        {% if food.is_available %}
+                          <a href="#" class="badge badge-success">Available</a>
+                        {% else %}
+                        <a href="#" class="badge badge-danger">Not Available</a>
+                        {% endif %}
+                        
+                      </td>
+                      <td><a href="{% url 'edit_food' food.id %} " style="color: unset;"><i class="fa fa-edit" aria-hidden="true" style="font-size: 18px;"></i></a>&nbsp; &nbsp;<a href="{% url 'delete_food' food.id %}" style="font-size: 18px" onclick="return confirm('Confirm delete?')"><i class="fa fa-trash text-danger" aria-hidden="true" style="font-size: 18px;"></i></a></td>
                     </tr>
                     {% endfor %}
                     
@@ -48,7 +56,7 @@
                 {% else %}
                 <h5 class="text-center">No food items found.</h5>
                 <div class="text-center">
-                  <a href="#" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true">&nbsp;</i> Add Food</a>
+                  <a href="{% url 'add_food' %}" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true">&nbsp;</i> Add Food</a>
                 </div>
 
                 {% endif %}
