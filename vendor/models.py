@@ -7,6 +7,7 @@ class Vendor(models.Model):
   user = models.OneToOneField(User, related_name="user", on_delete=models.CASCADE)
   user_profile = models.OneToOneField(UserProfile, related_name="user_profile", on_delete=models.CASCADE)
   vendor_name = models.CharField(max_length=100)
+  vendor_slug = models.SlugField(max_length=100, unique=True)
   vendor_license = models.ImageField(upload_to="vendor/license")
   # These will be captured automatically
   is_approved = models.BooleanField(default=True)
@@ -17,27 +18,27 @@ class Vendor(models.Model):
     return self.vendor_name
   
 
-  def save(self, *args, **kwargs):
-    if self.pk is not None:
-      #update
-      orig = Vendor.objects.get(pk=self.pk)
-      if orig.is_approved != self.is_approved:
-        if self.is_approved == True:
-          # Send notification email
-          mail_subject = "Congratulations! Your restaurant has been approved "
-          mail_template = "accounts/emails/admin_approval_email.html"
-          context = {
-            "user": self.user,
-            "is_approved": self.is_approved
-          }
-          send_notification(mail_subject, mail_template, context)
-        else:
-          # Send notification email
-          mail_subject = "We are sorry! you do not satisfy the criteria"
-          mail_template = "accounts/emails/admin_approval_email.html"
-          send_notification(mail_subject, mail_template, context)
-          context = {
-            "user": self.user,
-            "is_approved": self.is_approved
-          }
-    return super(Vendor, self).save(*args, **kwargs)
+  # def save(self, *args, **kwargs):
+  #   if self.pk is not None:
+  #     #update
+  #     orig = Vendor.objects.get(pk=self.pk)
+  #     if orig.is_approved != self.is_approved:
+  #       if self.is_approved == True:
+  #         # Send notification email
+  #         mail_subject = "Congratulations! Your restaurant has been approved "
+  #         mail_template = "accounts/emails/admin_approval_email.html"
+  #         context = {
+  #           "user": self.user,
+  #           "is_approved": self.is_approved
+  #         }
+  #         send_notification(mail_subject, mail_template, context)
+  #       else:
+  #         # Send notification email
+  #         mail_subject = "We are sorry! you do not satisfy the criteria"
+  #         mail_template = "accounts/emails/admin_approval_email.html"
+  #         send_notification(mail_subject, mail_template, context)
+  #         context = {
+  #           "user": self.user,
+  #           "is_approved": self.is_approved
+  #         }
+  #   return super(Vendor, self).save(*args, **kwargs)
