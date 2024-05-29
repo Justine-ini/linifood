@@ -1,5 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+
+from orders.forms import OrderForm
 from .context_processors import get_cart_amounts, get_cart_counter
 from vendor.models import Vendor
 from menu.models import Category, FoodItem
@@ -41,27 +43,28 @@ def vendor_detail(request, vendor_slug):
   return render(request, "marketplace/vendor_detail.html", context)
 
 def add_to_cart(request, food_id):
-  if request.user.is_authenticated:
-    if request.headers.get("x-requested-with")=="XMLHttpRequest":
-      # Check if food item exists
-      try:
-        fooditem = FoodItem.objects.get(id=food_id)
-        # Check if the user has already added that food to the cart
-        try:
-          chkCart  = Cart.objects.get(user=request.user, fooditem=fooditem)
-          # Increase cart quantity
-          chkCart.quantity += 1
-          chkCart.save()
-          return JsonResponse({"status":"success", "message":"Increased cart quantity", "cart_counter": get_cart_counter(request), "qty":chkCart.quantity, "cart_amount": get_cart_amounts(request)})
-        except:
-          chkCart = Cart.objects.create(user=request.user, fooditem=fooditem, quantity=1)
-          return JsonResponse({"status":"success", "message":"Added the food to the cart", "cart_counter": get_cart_counter(request), "qty":chkCart.quantity, "cart_amount": get_cart_amounts(request)})
-      except:
-        return JsonResponse({"status":"failed", "message":"This food does not exist"})
+    if request.user.is_authenticated:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # Check if the food item exists
+            try:
+                fooditem = FoodItem.objects.get(id=food_id)
+                # Check if the user has already added that food to the cart
+                try:
+                    chkCart = Cart.objects.get(user=request.user, fooditem=fooditem)
+                    # Increase the cart quantity
+                    chkCart.quantity += 1
+                    chkCart.save()
+                    return JsonResponse({'status': 'Success', 'message': 'Increased the cart quantity', 'cart_counter': get_cart_counter(request), 'qty': chkCart.quantity, 'cart_amount': get_cart_amounts(request)})
+                except:
+                    chkCart = Cart.objects.create(user=request.user, fooditem=fooditem, quantity=1)
+                    return JsonResponse({'status': 'Success', 'message': 'Added the food to the cart', 'cart_counter': get_cart_counter(request), 'qty': chkCart.quantity, 'cart_amount': get_cart_amounts(request)})
+            except:
+                return JsonResponse({'status': 'Failed', 'message': 'This food does not exist!'})
+        else:
+            return JsonResponse({'status': 'Failed', 'message': 'Invalid request!'})
+        
     else:
-      return JsonResponse({"status":"failed", "message":"Invalid request"})
-  else:
-    return JsonResponse({"status":"login_required", "message":"Please login to continue"})
+        return JsonResponse({'status': 'login_required', 'message': 'Please login to continue'})
   
 
 
@@ -109,15 +112,19 @@ def delete_cart(request, cart_id):
             cart_item = Cart.objects.get(user=request.user, id=cart_id)
             if cart_item:
                cart_item.delete()
-               return JsonResponse({'status': 'success', 'message': 'Cart item has been deleted!', "cart_counter": get_cart_counter(request), "cart_counter": get_cart_counter(request)})
-            
+               return JsonResponse({'status': 'success', 'message': 'Cart item has been deleted!', "cart_counter": get_cart_counter(request), "cart_counter": get_cart_amounts(request)})   
          except:
-            return JsonResponse({'status': 'Failed', 'message': 'This cart item does not exist!'})
-
-
+            return JsonResponse({'status': 'Failed', 'message': 'Cart item does not exist!'})
       else:
          return JsonResponse({'status': 'Failed', 'message': 'Invalid request!'})
       
+
+def checkout(request):
+   form = OrderForm()
+   context = {
+      "form":form
+   }
+   return render(request, 'marketplace/checkout.html', context)
 
 
 def search(request):
