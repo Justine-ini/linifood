@@ -8,13 +8,7 @@ from vendor.forms import VendorForm
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.template.defaultfilters import slugify
-
-
-
-
 from django.core.exceptions import PermissionDenied
-
-
 from django.core.mail import EmailMessage, send_mail
 from django.contrib.auth import login
 
@@ -240,6 +234,7 @@ def myAccount(request):
   user = request.user
   redirectUrl = detectUser(user)
   return redirect(redirectUrl)
+
 
 @login_required(login_url="login")
 @user_passes_test(check_role_customer)
