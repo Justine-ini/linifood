@@ -9,14 +9,13 @@ class Payment(models.Model):
         ('RazorPay', 'RazorPay'), # Only for Indian Students.
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    transaction_id = models.CharField(max_length=100)
     payment_method = models.CharField(choices=PAYMENT_METHOD, max_length=100)
     amount = models.CharField(max_length=10)
     status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.transaction_id
+        return f"{self.status}, {self.created_at}"
 
 
 class Order(models.Model):
@@ -44,9 +43,11 @@ class Order(models.Model):
     total_tax = models.FloatField()
     payment_method = models.CharField(max_length=25)
     status = models.CharField(max_length=15, choices=STATUS, default='New')
-    is_ordered = models.BooleanField(default=False)
+    is_ordered = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    feedbacks = models.CharField(max_length=20, blank=True)
+    
 
     # Concatenate first name and last name
     @property

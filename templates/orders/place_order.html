@@ -11,56 +11,27 @@
                 <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
                     <div class="tabs-holder horizontal">
                         <ul class="stickynav-tabs nav nav-tabs">
-                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>Cart Items</a></li>
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger" style="font-size: 16px; font-weight:bold;"> &nbsp;Review your Billing Address</i></a></li>
                             
                         </ul>
                         <div class="tab-content">
                             <div id="home" class="tab-pane in active">
                                 <div class="menu-itam-holder">
-                                    
-                                    <div class="text-center p-5" id="empty-cart" style="display: none;">
-                                        <h3>Cart is empty</h3>
-                                    </div>
 
                                     <div id="menu-item-list-6272" class="menu-itam-list">
-                                        
-                                        <ul>
-                                            {% if cart_items %}
-                                                {% for item in cart_items %}
-                                                <li id="cart-item-{{item.id}}">
-                                                    <div class="image-holder"> <img src="{{ item.fooditem.images.url }}" alt=""></div>
-                                                    <div class="text-holder">
-                                                        <h6>{{ item.fooditem }}</h6>
-                                                        <span>{{ item.fooditem.description }}</span>
-                                                        <a href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}" class="badge badge-warning">{{ item.fooditem.vendor }}</a>
-                                                    </div>
-                                                    <div class="price-holder">
-                                                        <span class="price">${{ item.fooditem.price }}</span>
+                                      <div class="billing-address" style="font-size: 16px; line-height: 2.5;">
+                                        <div><strong>Name: </strong>{{order.name}}</div>
+                                        <div><strong>Address: </strong>{{order.address}}</div>
+                                        <div><strong>City: </strong>{{order.city}} - {{order.pin_code}}</div>
+                                        <div><strong>State: </strong>{{order.state}}</div>
+                                        <div><strong>Country: </strong>{{order.country}}</div>
+                                        <div><strong>Phone: </strong>{{order.phone}}</div>
+                                        <div><strong>Email: </strong>{{order.email}}</div>
+                                        <div><a href="{% url 'checkout' %}" class="btn btn-outline-danger" style="margin: 20px 0;">Edit</a></div>
+                                      </div>
 
-                                                        <a href="#" class="decrease_cart" data-id="{{ item.fooditem.id }}" id="{{item.id}}" data-url="{% url 'decrease_cart' item.fooditem.id %}" style="margin-right: 28px;"><i class="icon-minus text-color"></i></a>
-                                                        <label id="qty-{{item.fooditem.id}}">0</label>
-                                                        <a href="#" class="add_to_cart" data-id="{{ item.fooditem.id }}" data-url="{% url 'add_to_cart' item.fooditem.id %}"><i class="icon-plus4 text-color"></i></a>
-                                                        <a href="#" class="delete_cart" data-id="{{ item.id }}" data-url="{% url 'delete_cart' item.id %}"><i class="icon-delete text-color"></i></a>
-                                                        
-                                                    </div>
-                                                </li>
-                                                {% endfor %}
-                                            {% else %}
-                                                <div class="text-center p-5">
-                                                    <h3>Cart is empty</h3>
-                                                </div>
-                                            {% endif %}
-                                        </ul>
-                                        
-                                        
-                                        
                                     </div>
 
-                                    {% for item in cart_items %}
-
-                                    <span id="qty-{{item.fooditem.id}}" class="item_qty d-none" data-qty="{{ item.quantity }}">{{ item.quantity }}</span>
-
-                                    {% endfor %}
                                 </div>
                             </div>
                             
@@ -80,6 +51,19 @@
                                 <div class="menu-itam-holder">
                                     
                                     <div>
+
+                                      <table class="table">
+                                        <tbody>
+                                          {% for item in cart_items %}
+                                          <tr>
+                                            <td><img src="{{item.fooditem.images.url}}" alt="food image" width="40"></td>
+                                            <td>{{item.fooditem}}</td>
+                                            <td>{{item.quantity}}</td>
+                                            <td>{{item.fooditem.price}}</td>
+                                          </tr>
+                                          {% endfor %}
+                                        </tbody>
+                                      </table>
                                         <ul>
                                             <li style="list-style-type: none;">
                                                 Subtotal
@@ -109,8 +93,20 @@
                                                     <span id="total">{{ grand_total }}</span>
                                                 </span>
                                             </li>
+                                            <!-- {% if order.payment_method == 'PayPal' %}
+                                            
+                                            <div id="paypal-button-container"></div>
+                                            {% elif order.payment_method == 'RazorPay' %}
+                                            <div id="rzp_payment_button">
+                                                <button class="btn btn-danger w-100 p-2" id="rzp-button1">Pay with RazorPay</button>
+                                                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                                            </div>
+                                            {% endif %} -->
 
-                                            <a href="{% url 'checkout' %}" class="btn btn-danger w-100 p-2 mt-3">PROCEED TO CHECKOUT</a>
+                                            <a href="{% url 'order_complete' %}" class="btn btn-danger w-100 p-2 mt-3">PROCEED TO CHECKOUT</a>
+                                          
+                                            
+                                            <div id="paypal-button-container"></div>
                                         </ul>
                                     </div>
                                     
@@ -127,4 +123,33 @@
 </div>
 <!-- Main Section End -->
 
+<script>
+  // Send the data to payments view to store in the database
+  function sendTransaction(order_number, payment_method, status){
+    var grand_total = "{{ grand_total }}"
+    var url = "{% url 'payments' %}"
+    var order_number = "{{ order.order_number }}"
+    var order_complete = "{% url 'order_complete' %}"
+   
+      $.ajax({
+          type: 'POST',
+          url: url,
+          data: {
+              'order_number': order_number,
+              'payment_method': payment_method,
+              'status': status,
+              "feedbacks": feedbacks
+
+          },
+          success: function(response){
+              console.log('response==>', response)
+              window.location.href = order_complete +'?order_number='+response.order_number+'&feedbacks'+response.feedbacks
+          }
+      })
+  }
+</script>
+
 {% endblock %}
+
+
+
